@@ -1,0 +1,45 @@
+# call api
+# get location from user
+# if invalid city/zip alert user and prompt for re-entry
+# if valid format url to user location
+# get unformatted weather data from site
+# access dictionaries to display weather and temperature
+# reformat json data for readability
+# convert temperature from kelvin to fahrenheit
+# display current weather to user and allow them to run again
+
+
+import requests
+def kelvin_to_fahrenheit(kelvin):
+  farenheit = (float(kelvin) * 1.8) - 459.67
+  return farenheit
+
+
+user_wants_to_run = True
+invalid_location = True
+
+while invalid_location: # if they entered invalid location you try again.
+    while user_wants_to_run: # runs as long as user requests
+        api_address = 'http://api.openweathermap.org/data/2.5/weather?appid=[APIkey]=' # url without location
+        location = input("Please enter your city or zip code: ")
+        final_url = api_address + location # creates url unique to user request
+        try:
+            api_link = requests.get(final_url)
+            unformatted_data = api_link.json()
+            weather = unformatted_data["weather"][0]["main"] # access pertinent information from json dictionaries
+        except KeyError:
+            print("Invalid location. Please try again.")
+            invalid_location == True
+        else:
+            kelvin = unformatted_data["main"]["temp"] # access tmeperature from main dictionary
+            temperature = kelvin_to_fahrenheit(kelvin) # call function that converts temperature from kelvin to fahrenheit
+
+            print("Sky conditions are currently", weather,"and the temperature is ", round(temperature,2),"degrees fahrenheit.") # display weather in an understandable format
+            ask = str(input("Do you want to run this program again(Y/n)?:"))
+            if ask == "Y" or ask == "y":
+                user_wants_to_run = True
+            elif ask == "N" or ask == "n":
+                user_wants_to_run = False
+                invalid_location = False
+            else:
+                print("Input not valid. Running program again.") # in the event user does not answer y/n program runs again
